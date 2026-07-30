@@ -54,6 +54,23 @@ written in bash.
 
 ## Installation
 
+### Homebrew (macOS and Linux)
+
+If you have [Homebrew](https://brew.sh), install phpenv from the phpenv tap:
+
+```sh
+brew install phpenv/tap/phpenv
+```
+
+Then add phpenv to your shell and restart it:
+
+```sh
+echo 'eval "$(phpenv init -)"' >> ~/.profile
+exec $SHELL -l
+```
+
+To build PHP versions, also install the php-build plugin (see step 5 below).
+
 ### Basic GitHub Checkout
 For a more automated install, you can use [phpenv-installer][phpenv-installer-url].
 If you prefer a manual approach, follow the steps below.
