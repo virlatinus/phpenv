@@ -5,14 +5,16 @@ load test_helper
 @test "without args shows summary of common commands" {
   run phpenv-help
   assert_success
-  assert_line "Usage: phpenv <command> [<args>...]"
-  assert_line "Commands to manage available PHP versions:"
+  assert_line "Usage: phpenv [options] <command> [<args>...]"
+  assert_line "Options:"
+  assert_line "Available commands (including 3rd-party ones from plugins):"
+  assert_line "   echo"
 }
 
 @test "usage flag" {
   run phpenv-help --usage
   assert_success
-  assert_output "Usage: phpenv <command> [<args>...]"
+  assert_output "Usage: phpenv [options] <command> [<args>...]"
 }
 
 @test "invalid command" {

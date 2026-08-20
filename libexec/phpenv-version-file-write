@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Summary: Write a version to a given version file
 # Usage: phpenv version-file-write <file> <version>
 
 set -e

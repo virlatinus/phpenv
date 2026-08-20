@@ -3,8 +3,13 @@
 # Summary: Display help for a command
 #
 # Usage: phpenv help [--usage] COMMAND
+#        phpenv help --complete-commands [PREFIX]
 #
 # Parses and displays help contents from a command's source file.
+#
+# `phpenv help --complete-commands' prints `name:summary' pairs for every
+# phpenv command whose name starts with PREFIX (all commands if PREFIX is
+# omitted). It is meant for scripting/completion use, not interactive use.
 #
 # A command is considered documented if it starts with a comment block
 # that has a `Summary:' or `Usage:' section. Usage instructions can
@@ -101,19 +106,39 @@ documentation_for() {
   fi
 }
 
+# Some 3rd-party plugin commands ship without a documentation comment (or,
+# like phpenv-pie, are a compiled binary that can't carry one at all).
+# Fall back to a short inferred description for those instead of leaving
+# them blank in the listing.
+declare -A fallback_summaries=(
+  [man]="Open the manual page for a phpenv command or PHP extension (phpenv-man plugin)"
+  [pie]="Manage PHP extensions via PIE, the PHP Installer for Extensions (phpenv-pie plugin)"
+  [update]="Pull the latest php-build release definitions (php-build plugin)"
+)
+
 print_summary() {
   local command="$1"
+  local width="$2"
   local summary usage help
   eval "$(documentation_for "$command")"
+  [ -n "$summary" ] || summary="${fallback_summaries[$command]:-}"
 
   if [ -n "$summary" ]; then
-    printf "   %-9s   %s\n" "$command" "$summary"
+    printf "   %-${width}s   %s\n" "$command" "$summary"
+  else
+    printf "   %s\n" "$command"
   fi
 }
 
 print_summaries() {
+  local command
+  local width=0
   for command; do
-    print_summary "$command"
+    [ "${#command}" -gt "$width" ] && width="${#command}"
+  done
+
+  for command; do
+    print_summary "$command" "$width"
   done
 }
 
@@ -186,14 +211,16 @@ if [ "$1" = "--usage" ]; then
 fi
 
 if [ -z "$1" ] || [ "$1" == "phpenv" ]; then
-  echo "Usage: phpenv <command> [<args>...]"
+  echo "Usage: phpenv [options] <command> [<args>...]"
   [ -n "$usage" ] && exit
   echo
-  echo "Commands to manage available PHP versions:"
-  print_summaries versions install uninstall rehash
+  echo "Options:"
+  printf "   %-14s   %s\n" "-v, --version" "Display the version of phpenv"
+  printf "   %-14s   %s\n" "-h, --help" "Display this help message"
+  printf "   %-14s   %s\n" "--debug" "Run in debug mode, printing every command as it executes"
   echo
-  echo "Commands to view or change the current PHP version:"
-  print_summaries version local global shell
+  echo "Available commands (including 3rd-party ones from plugins):"
+  print_summaries $(phpenv-commands | grep -v '^--version$')
   echo
   echo "See \`phpenv help <command>' for information on a specific command."
   echo "For full documentation, see: https://github.com/phpenv/phpenv#readme"

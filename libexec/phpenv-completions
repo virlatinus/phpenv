@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Summary: List completion candidates for a given phpenv command
 # Usage: phpenv completions <command> [<args>...]
 
 set -e

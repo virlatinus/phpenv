@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Summary: Install PHP build dependencies and the latest PHP releases via Homebrew (macOS only)
 
 # Check prerequisites
 [[ "Darwin" != "$(uname)" ]] && { \
